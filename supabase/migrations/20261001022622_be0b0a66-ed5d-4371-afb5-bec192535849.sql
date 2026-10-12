@@ -1,0 +1,1 @@
+ALTER TABLE public.comments ADD COLUMN timecode numeric CHECK (timecode IS NULL OR timecode >= 0);
