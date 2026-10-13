@@ -1,5 +1,6 @@
 import { BRAND_NAME } from "@/lib/brand";
-import logoAsset from "@/assets/logo-skyrush.png.asset.json";
+// Le logo est servi depuis le dossier public (indépendant de Lovable).
+const logoAsset = { url: "/logo-skyrush.png" };
 
 export function BrandMark({
   subtitle,

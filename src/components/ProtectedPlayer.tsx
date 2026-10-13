@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type Ref } from "react";
-import logoAsset from "@/assets/logo-skyrush.png.asset.json";
+// Le logo est servi depuis le dossier public (indépendant de Lovable).
+const logoAsset = { url: "/logo-skyrush.png" };
 import { supabase } from "@/integrations/supabase/client";
 import { getR2StreamUrl, R2_PREFIX } from "@/lib/r2.functions";
 import { getShareStreamUrl } from "@/lib/share.functions";
