@@ -18,7 +18,7 @@ import {
 
 
 import { getR2UploadUrl } from "@/lib/r2.functions";
-import { deleteProject, deleteVideo, sendClientLink, setProjectArchived } from "@/lib/projects.functions";
+import { deleteProject, deleteVideo, setProjectArchived } from "@/lib/projects.functions";
 
 
 export const Route = createFileRoute("/admin")({
@@ -530,20 +530,14 @@ function AdminPage() {
                   <button
                     onClick={() => {
                       const link = `https://client.skyrush972.fr/lien/${selected.share_token}`;
-                      void navigator.clipboard.writeText(link).catch(() => {});
-                      const t = toast.loading(`Envoi du lien à ${selected.client_email}…`);
-                      sendClientLink({ data: { id: selected.id } }).then(
-                        (r) =>
-                          r.sent
-                            ? toast.success(`Lien copié et envoyé par e-mail à ${r.email}`, { id: t })
-                            : toast.error(`Lien copié, mais ${r.email} refuse les e-mails`, { id: t }),
-                        (e) =>
-                          toast.error(`Lien copié, mais l'e-mail n'a pas pu partir : ${e instanceof Error ? e.message : ""}`, { id: t }),
+                      navigator.clipboard.writeText(link).then(
+                        () => toast.success("Lien copié — envoyez-le à votre client"),
+                        () => toast.error(`Copie impossible, voici le lien : ${link}`, { duration: 15000 }),
                       );
                     }}
                     className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
                   >
-                    Copier et envoyer le lien au client
+                    Copier le lien client
                   </button>
                   <button
                     onClick={() =>
