@@ -5,9 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system — "Skyrush972 : survol cinématique".
- * Fond bleu nuit profond, texte blanc cassé, accent doré soleil couchant.
- * Titres serif italiques (Playfair Display), libellés HUD en mono.
+ * Design system — "Skyrush972 : Or & Mouvement".
+ * Noir profond, accent or champagne, titres serif italiques (Bodoni Moda),
+ * habillage « caméra / FPV » (REC, réticule, lignes de vitesse) et animations
+ * discrètes. Tout est désactivé si l'utilisateur réduit les animations.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
 
@@ -50,42 +51,44 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  --font-display-family: "Playfair Display", serif;
-  --font-body-family: "Inter", sans-serif;
+  --font-display-family: "Bodoni Moda", "Playfair Display", serif;
+  --font-body-family: "Manrope", "Inter", sans-serif;
   --font-mono-family: "JetBrains Mono", monospace;
 
-  /* deep night-blue, like the site's dark overlays */
-  --background: oklch(0.16 0.025 250);
-  --foreground: oklch(0.94 0.012 90);
-  --surface: oklch(0.21 0.03 250);
-  --ink: oklch(0.13 0.022 250);
-  --ink-foreground: oklch(0.94 0.012 90);
+  /* noir profond, légèrement chaud */
+  --background: oklch(0.1 0.004 280);
+  --foreground: oklch(0.93 0.015 90);
+  --surface: oklch(0.16 0.008 85);
+  --ink: oklch(0.1 0.004 280);
+  --ink-foreground: oklch(0.93 0.015 90);
 
-  --card: oklch(0.21 0.03 250);
-  --card-foreground: oklch(0.94 0.012 90);
-  --popover: oklch(0.19 0.028 250);
-  --popover-foreground: oklch(0.94 0.012 90);
+  --card: oklch(0.16 0.008 85);
+  --card-foreground: oklch(0.93 0.015 90);
+  --popover: oklch(0.14 0.008 85);
+  --popover-foreground: oklch(0.93 0.015 90);
 
-  --primary: oklch(0.94 0.012 90);
-  --primary-foreground: oklch(0.16 0.025 250);
-  --secondary: oklch(0.26 0.032 250);
-  --secondary-foreground: oklch(0.94 0.012 90);
-  --muted: oklch(0.26 0.032 250);
-  --muted-foreground: oklch(0.68 0.02 250);
+  --primary: oklch(0.93 0.015 90);
+  --primary-foreground: oklch(0.1 0.004 280);
+  --secondary: oklch(0.22 0.01 85);
+  --secondary-foreground: oklch(0.93 0.015 90);
+  --muted: oklch(0.22 0.01 85);
+  --muted-foreground: oklch(0.7 0.012 90);
 
-  /* golden-hour amber, from the site's buttons and HUD */
-  --accent: oklch(0.82 0.115 85);
-  --accent-foreground: oklch(0.2 0.03 250);
+  /* or champagne */
+  --accent: oklch(0.85 0.1 88);
+  --accent-deep: oklch(0.66 0.11 78);
+  --accent-light: oklch(0.94 0.07 92);
+  --accent-foreground: oklch(0.2 0.03 80);
   --destructive: oklch(0.62 0.19 25);
   --destructive-foreground: oklch(0.97 0.01 90);
-  --success: oklch(0.72 0.13 160);
+  --success: oklch(0.76 0.13 160);
   --success-foreground: oklch(0.16 0.025 250);
 
-  --border: oklch(0.94 0.012 90 / 0.12);
-  --input: oklch(0.94 0.012 90 / 0.18);
-  --ring: oklch(0.82 0.115 85);
+  --border: oklch(0.85 0.1 88 / 0.16);
+  --input: oklch(0.85 0.1 88 / 0.22);
+  --ring: oklch(0.85 0.1 88);
 }
 
 @layer base {
@@ -115,11 +118,25 @@
   letter-spacing: 0;
 }
 
+/* Titre doré : dégradé champagne avec un reflet qui traverse lentement. */
 @utility title-italic {
   font-family: var(--font-display-family);
   font-style: italic;
-  font-weight: 500;
-  color: var(--color-accent);
+  font-weight: 600;
+  background-image: linear-gradient(
+    100deg,
+    var(--accent-deep) 0%,
+    var(--accent-light) 25%,
+    var(--accent) 50%,
+    oklch(0.98 0.03 95) 75%,
+    var(--accent-deep) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 7s linear infinite;
 }
 
 @utility rise-in {
@@ -132,7 +149,7 @@
   -webkit-touch-callout: none;
 }
 
-/* Vignette de séquence : surface bleu nuit, halo doré en haut, grain fin. */
+/* Vignette de séquence : surface sombre, halo doré en haut, grain fin. */
 @utility film-frame {
   background-color: var(--color-surface);
   background-image:
@@ -158,7 +175,176 @@
 }
 
 @utility glow-accent {
-  box-shadow: 0 18px 40px -18px color-mix(in oklab, var(--color-accent) 40%, transparent);
+  box-shadow: 0 18px 40px -18px color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+
+/* Fond ambiant : halos dorés et violets qui dérivent lentement derrière la page. */
+@utility ambient {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  &::before {
+    content: "";
+    position: absolute;
+    left: -160px;
+    top: -120px;
+    width: 620px;
+    height: 620px;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-accent) 30%, transparent),
+      transparent 65%
+    );
+    filter: blur(30px);
+    animation: drift1 14s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    right: -180px;
+    top: 420px;
+    width: 700px;
+    height: 700px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, oklch(0.5 0.16 290 / 0.22), transparent 65%);
+    filter: blur(40px);
+    animation: drift2 18s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+/* Carte « verre fumé » à liseré doré. */
+@utility glass {
+  background-image: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.06),
+    oklch(1 0 0 / 0.015)
+  );
+  border: 1px solid color-mix(in oklab, var(--color-accent) 20%, transparent);
+}
+
+/* Soulèvement au survol. */
+@utility lift {
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+  &:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in oklab, var(--color-accent) 60%, transparent);
+    box-shadow: 0 24px 50px -24px color-mix(in oklab, var(--color-accent) 45%, transparent);
+  }
+}
+
+/* Bouton principal : dégradé champagne + reflet qui passe en boucle. */
+@utility btn-gold {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(
+    120deg,
+    var(--accent-light),
+    var(--accent) 55%,
+    var(--accent-deep)
+  );
+  color: var(--accent-foreground);
+  box-shadow: 0 14px 34px -14px color-mix(in oklab, var(--color-accent) 70%, transparent);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -12px color-mix(in oklab, var(--color-accent) 80%, transparent);
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 36px;
+    background: oklch(1 0 0 / 0.55);
+    filter: blur(6px);
+    animation: sweep 3.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+/* Effet « perte de signal » ponctuel sur un titre (texte dupliqué via data-text). */
+@utility glitch {
+  position: relative;
+  display: inline-block;
+  &::before,
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    white-space: nowrap;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+  &::before {
+    color: #5eead4;
+    animation: glA 6.5s steps(1) infinite;
+  }
+  &::after {
+    color: #ff4d9d;
+    animation: glB 6.5s steps(1) infinite;
+  }
+}
+
+/* Affichage caméra (OSD) qui scintille légèrement. */
+@utility osd {
+  font-family: var(--font-mono-family);
+  letter-spacing: 0.2em;
+  animation: flicker 5s linear infinite;
+}
+
+@utility hud-blink {
+  animation: blink 1.2s steps(1) infinite;
+}
+
+@utility hud-streak {
+  animation: streak 2.2s cubic-bezier(0.3, 0.7, 0.2, 1) infinite;
+}
+
+@utility hud-scan {
+  animation: scan 6s linear infinite;
+}
+
+@utility hud-roll {
+  animation: roll 7s ease-in-out infinite;
+}
+
+@utility hud-spin {
+  animation: spin 40s linear infinite;
+}
+
+@utility hud-ring {
+  animation: pulse 2.4s ease-out infinite;
+}
+
+@utility sway {
+  animation: sway 4s ease-in-out infinite;
+}
+
+@utility marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+@utility whip-in {
+  animation: whip 0.55s cubic-bezier(0.2, 0.9, 0.1, 1) backwards;
+}
+
+@utility fill-in {
+  animation: fillbar 1.6s ease-out 0.4s backwards;
 }
 
 @keyframes rise {
@@ -169,5 +355,229 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes drift1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(80px, 60px) scale(1.15);
+  }
+}
+
+@keyframes drift2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-90px, -40px) scale(1.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  60%,
+  100% {
+    transform: translateX(520%) skewX(-20deg);
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1.2deg);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-10%);
+  }
+  100% {
+    transform: translateY(110%);
+  }
+}
+
+@keyframes streak {
+  0% {
+    transform: translateX(-40%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(140%);
+    opacity: 0;
+  }
+}
+
+@keyframes roll {
+  0%,
+  100% {
+    transform: rotate(-3.5deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.55;
+  }
+  94% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.7;
+  }
+  98% {
+    opacity: 1;
+  }
+}
+
+@keyframes whip {
+  0% {
+    opacity: 0;
+    transform: translateX(-70px) skewX(-14deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) skewX(0);
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fillbar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes glA {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  89% {
+    opacity: 0.95;
+    transform: translate(-7px, 1px);
+    clip-path: inset(8% 0 58% 0);
+  }
+  91% {
+    opacity: 0.95;
+    transform: translate(5px, -2px);
+    clip-path: inset(52% 0 14% 0);
+  }
+  93% {
+    opacity: 0.95;
+    transform: translate(-3px, 0);
+    clip-path: inset(30% 0 35% 0);
+  }
+  95% {
+    opacity: 0;
+  }
+}
+
+@keyframes glB {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  90% {
+    opacity: 0.95;
+    transform: translate(7px, -1px);
+    clip-path: inset(40% 0 30% 0);
+  }
+  92% {
+    opacity: 0.95;
+    transform: translate(-5px, 2px);
+    clip-path: inset(5% 0 62% 0);
+  }
+  94% {
+    opacity: 0.95;
+    transform: translate(3px, 0);
+    clip-path: inset(60% 0 8% 0);
+  }
+  96% {
+    opacity: 0;
+  }
+}
+
+/* Accessibilité : aucune animation si l'utilisateur les a réduites. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
   }
 }

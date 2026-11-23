@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Film,
   MessageSquare,
@@ -34,6 +34,33 @@ export type OverviewComment = {
   resolved_at: string | null;
 };
 
+/** Compteur animé : monte jusqu'à la valeur (immédiat si animations réduites). */
+function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(value);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 1400);
+      setShown(Math.round(value * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return (
+    <>
+      {shown}
+      {suffix}
+    </>
+  );
+}
+
 /**
  * Carte KPI « médaillon » : icône dans un médaillon verre fumé cerclé d'or,
  * chiffre serif Playfair, halo doré au survol.
@@ -55,13 +82,15 @@ function Stat({
     <button
       type="button"
       onClick={onClick}
-      className="group min-w-0 rounded-2xl bg-ink-foreground/5 p-5 text-left ring-1 ring-ink-foreground/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-foreground/10 hover:ring-accent/40 hover:glow-accent"
+      className="glass lift group flex min-h-[190px] min-w-0 flex-col justify-between rounded-3xl p-6 text-left"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ink/60 text-accent ring-1 ring-accent/30 transition-transform duration-300 group-hover:scale-105">
           {icon}
         </span>
-        <p className="title-display text-5xl leading-none tabular-nums">{value}</p>
+        <p className="title-display text-6xl leading-none tabular-nums lg:text-7xl">
+          <CountUp value={value} />
+        </p>
       </div>
       <p className="label-mono mt-4 text-ink-foreground/40">{label}</p>
       <p className="mt-1.5 truncate text-xs text-ink-foreground/50">{hint}</p>
@@ -150,7 +179,7 @@ export function AdminDashboard({
           <button
             type="button"
             onClick={onNew}
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+            className="mt-5 inline-flex items-center gap-2 btn-gold rounded-full px-6 py-3 text-sm font-semibold"
           >
             <Plus className="size-4" /> Créer mon premier projet
           </button>
@@ -194,11 +223,11 @@ export function AdminDashboard({
       </div>
 
       {/* avancement des livraisons : médaillon de pourcentage + jauge dorée */}
-      <div className="rounded-2xl bg-ink-foreground/5 p-5 ring-1 ring-ink-foreground/10">
+      <div className="glass rounded-3xl p-6">
         <div className="flex items-center gap-4">
-          <span className="grid size-14 shrink-0 place-items-center rounded-full bg-ink/60 ring-1 ring-accent/30">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-ink/60 ring-1 ring-accent/40">
             <span className="title-display text-lg leading-none text-accent tabular-nums">
-              {progress}%
+              <CountUp value={progress} suffix="%" />
             </span>
           </span>
           <div className="min-w-0 flex-1">
@@ -210,7 +239,7 @@ export function AdminDashboard({
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-ink-foreground/10">
               <div
-                className="h-full rounded-full bg-accent transition-[width] duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-[var(--accent-deep)] via-[var(--accent-light)] to-[var(--accent)] shadow-[0_0_18px_var(--accent)] transition-[width] duration-700"
                 style={{ width: `${progress}%` }}
               />
             </div>

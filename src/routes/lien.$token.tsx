@@ -84,20 +84,46 @@ function SharePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="ambient min-h-screen bg-background text-foreground">
       <header className="flex items-center justify-between px-6 py-5 lg:px-12">
         <BrandMark />
-        <span className="label-mono text-muted-foreground">Livraison privée</span>
+        <span className="label-mono flex items-center gap-2 rounded-full border border-accent/30 bg-ink/60 px-4 py-2 text-accent">
+          <span className="size-1.5 rounded-full bg-accent shadow-[0_0_10px_var(--accent)]" />
+          Livraison privée
+        </span>
       </header>
       <main className="mx-auto max-w-6xl px-6 pb-20 lg:px-12">
-        <p className="label-mono text-accent">— Livraison · {project.client_name}</p>
-        <h1 className="title-display mt-2 text-4xl lg:text-6xl">
-          <span className="title-italic">{project.title}</span>
+        <p className="label-mono rise-in text-accent">— Livraison · {project.client_name}</p>
+        <h1 className="title-display rise-in mt-3 text-5xl leading-[1.05] lg:text-8xl">
+          <span className="title-italic glitch" data-text={project.title}>
+            {project.title}
+          </span>
         </h1>
-        <p className="mt-4 max-w-2xl text-sm text-pretty text-muted-foreground">
+        <div className="mt-6 h-px w-24 bg-gradient-to-r from-accent to-transparent" />
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-pretty text-muted-foreground">
           Regardez vos vidéos, laissez vos commentaires à l'instant précis qui vous interpelle,
           puis téléchargez vos fichiers une fois la livraison validée.
         </p>
+
+        <div
+          aria-hidden
+          className="-mx-6 mt-10 overflow-hidden border-y border-accent/25 py-4 whitespace-nowrap lg:-mx-12"
+        >
+          <div className="marquee-track title-display inline-flex gap-12 text-2xl text-accent/70 italic">
+            {[0, 1, 2, 3].map((k) => (
+              <span key={k} className="inline-flex gap-12">
+                <span>Skyrush972</span>
+                <span className="text-accent">✦</span>
+                <span>Cinéma aérien</span>
+                <span className="text-accent">✦</span>
+                <span>Martinique</span>
+                <span className="text-accent">✦</span>
+                <span>Prises de vues FPV</span>
+                <span className="text-accent">✦</span>
+              </span>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-8">
@@ -108,7 +134,7 @@ function SharePage() {
                 <button
                   onClick={() => void download()}
                   disabled={!project.is_paid || !current}
-                  className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                  className="btn-gold rounded-full px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {project.is_paid ? "Télécharger" : "🔒 Téléchargement verrouillé"}
                 </button>
@@ -132,10 +158,16 @@ function SharePage() {
           </div>
 
           <aside className="min-w-0 lg:col-span-4">
-            <p className="label-mono mb-3 text-muted-foreground">Vos retours</p>
+            <p className="title-display mb-4 text-3xl">
+              Vos <span className="title-italic">retours</span>
+            </p>
             <div className="max-h-[420px] space-y-3 overflow-y-auto">
-              {comments.map((c) => (
-                <div key={c.id} className="rounded-lg bg-surface p-3 ring-1 ring-border">
+              {comments.map((c, i) => (
+                <div
+                  key={c.id}
+                  style={{ animationDelay: `${Math.min(i, 6) * 0.1}s` }}
+                  className="whip-in glass lift rounded-2xl p-4"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <p className="label-mono text-accent">{c.author_name}</p>
                     {c.timecode != null && (
@@ -157,7 +189,7 @@ function SharePage() {
                   {c.video_id && c.video_id !== current?.id && (
                     <p className="text-xs text-muted-foreground">{videos.find((v) => v.id === c.video_id)?.title}</p>
                   )}
-                  <p className="mt-1 whitespace-pre-wrap text-sm">{c.body}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-[0.95rem] leading-relaxed">{c.body}</p>
                 </div>
               ))}
               {comments.length === 0 && (
@@ -179,7 +211,7 @@ function SharePage() {
                 placeholder="Votre nom"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg bg-surface px-3 py-2 text-sm ring-1 ring-border outline-none focus:ring-accent"
+                className="w-full rounded-xl bg-ink/60 px-4 py-3 text-sm ring-1 ring-accent/25 outline-none focus:ring-2 focus:ring-accent"
               />
               <textarea
                 required
@@ -190,7 +222,7 @@ function SharePage() {
                   if (stamp == null && videoRef.current) setStamp(videoRef.current.currentTime);
                 }}
                 onChange={(e) => setBody(e.target.value)}
-                className="w-full rounded-lg bg-surface px-3 py-2 text-sm ring-1 ring-border outline-none focus:ring-accent"
+                className="w-full rounded-xl bg-ink/60 px-4 py-3 text-sm ring-1 ring-accent/25 outline-none focus:ring-2 focus:ring-accent"
               />
               {stamp != null && useStamp ? (
                 <div className="flex items-center justify-between gap-2 rounded-lg bg-accent/10 px-3 py-2 text-sm ring-1 ring-accent/25">
@@ -229,7 +261,7 @@ function SharePage() {
               )}
               <button
                 disabled={send.isPending}
-                className="w-full rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground disabled:opacity-50"
+                className="btn-gold w-full rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
               >
                 Envoyer
               </button>
