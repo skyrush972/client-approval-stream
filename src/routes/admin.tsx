@@ -727,8 +727,16 @@ function AdminPage() {
               </div>
             </div>
     ) : null;
+  const headline =
+    view === "nouveau"
+      ? "Nouveau projet"
+      : view === "dashboard"
+        ? "Tableau de bord"
+        : selected
+          ? "Projet client"
+          : "Projets en cours";
   return (
-    <div className="min-h-screen bg-ink text-ink-foreground">
+    <div className="ambient min-h-screen bg-ink text-ink-foreground">
       <div className="grid grid-cols-12">
         {/* left rail */}
         <aside className="col-span-12 flex flex-col justify-between border-b border-border p-6 lg:col-span-3 lg:min-h-screen lg:border-b-0 lg:border-r">
@@ -796,9 +804,9 @@ function AdminPage() {
               <p className="label-mono mb-3 text-ink-foreground/30">Navigation</p>
               <button
                 onClick={() => setView("dashboard")}
-                className={`block w-full rounded-md px-3 py-2 text-left transition-colors ${
+                className={`block w-full rounded-xl px-4 py-3 text-left transition-all hover:pl-5 ${
                   view === "dashboard"
-                    ? "bg-ink-foreground/10 font-medium"
+                    ? "bg-gradient-to-r from-accent/20 to-transparent font-semibold text-accent shadow-[inset_2px_0_0_var(--accent)]"
                     : "text-ink-foreground/60 hover:text-ink-foreground"
                 }`}
               >
@@ -809,9 +817,9 @@ function AdminPage() {
                   setSelectedId(null);
                   setView("projets");
                 }}
-                className={`block w-full rounded-md px-3 py-2 text-left transition-colors ${
+                className={`block w-full rounded-xl px-4 py-3 text-left transition-all hover:pl-5 ${
                   view === "projets"
-                    ? "bg-ink-foreground/10 font-medium"
+                    ? "bg-gradient-to-r from-accent/20 to-transparent font-semibold text-accent shadow-[inset_2px_0_0_var(--accent)]"
                     : "text-ink-foreground/60 hover:text-ink-foreground"
                 }`}
               >
@@ -820,9 +828,9 @@ function AdminPage() {
 
               <button
                 onClick={openNewProject}
-                className={`block w-full rounded-md px-3 py-2 text-left transition-colors ${
+                className={`block w-full rounded-xl px-4 py-3 text-left transition-all hover:pl-5 ${
                   view === "nouveau"
-                    ? "bg-ink-foreground/10 font-medium"
+                    ? "bg-gradient-to-r from-accent/20 to-transparent font-semibold text-accent shadow-[inset_2px_0_0_var(--accent)]"
                     : "text-ink-foreground/60 hover:text-ink-foreground"
                 }`}
               >
@@ -845,15 +853,20 @@ function AdminPage() {
         <div className="col-span-12 p-6 lg:col-span-9 lg:p-8">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
+              <div className="osd mb-3 inline-flex flex-wrap items-center gap-x-5 gap-y-1 rounded-md border border-accent/30 bg-ink/40 px-3 py-1.5 text-[10px] text-ink-foreground">
+                <span className="flex items-center gap-2">
+                  <span className="hud-blink size-2 rounded-full bg-[#ff4d4d]" />
+                  REC
+                </span>
+                <span>MODE ACRO</span>
+                <span className="text-accent">5.8G</span>
+                <span>LQ 100</span>
+              </div>
               <p className="label-mono text-accent">Console</p>
-              <h1 className="title-display mt-1 text-4xl">
-                {view === "nouveau"
-                  ? "Nouveau projet"
-                  : view === "dashboard"
-                    ? "Tableau de bord"
-                    : selected
-                      ? "Projet client"
-                      : "Projets en cours"}
+              <h1 className="title-display mt-1 text-5xl">
+                <span className="title-italic glitch" data-text={headline}>
+                  {headline}
+                </span>
               </h1>
             </div>
             {view === "nouveau" ? (
@@ -866,7 +879,7 @@ function AdminPage() {
             ) : (
               <button
                 onClick={openNewProject}
-                className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+                className="btn-gold rounded-full px-6 py-3 text-sm font-semibold"
               >
                 + Nouveau projet
               </button>
@@ -1050,7 +1063,7 @@ function NewProjectForm({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground disabled:opacity-50"
+          className="btn-gold rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
         >
           Créer le projet
         </button>
@@ -1134,7 +1147,7 @@ function EditProjectForm({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground disabled:opacity-50"
+          className="btn-gold rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
         >
           Enregistrer
         </button>
